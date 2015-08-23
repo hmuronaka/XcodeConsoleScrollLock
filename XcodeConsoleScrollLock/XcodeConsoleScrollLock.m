@@ -14,9 +14,16 @@
 
 #define NSLog(format, ...) NSLog(@"XcodeConsoleScrollLock:%4d " format, __LINE__, ##__VA_ARGS__)
 
+typedef NS_ENUM(NSInteger, ScrollLockState) {
+    ScrollLockStateScrollable,
+    ScrollLockStateTemporaryScrollable,
+    ScrollLockStateLock
+};
+
 @interface XcodeConsoleScrollLock()
 
 @property(nonatomic, weak) NSScrollView* scrollView;
+@property(nonatomic, assign) ScrollLockState lockState;
 @property(nonatomic, weak) NSClipView* clipView;
 @property(nonatomic, assign) CGFloat clipViewY;
 
@@ -47,6 +54,7 @@ static XcodeConsoleScrollLock* _sharedInstance;
 {
     self = [super init];
     if (self) {
+        _lockState = ScrollLockStateScrollable;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidFinishLaunching:)
                                                      name:NSApplicationDidFinishLaunchingNotification
@@ -83,16 +91,68 @@ static XcodeConsoleScrollLock* _sharedInstance;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangedBounds:)		name:NSViewBoundsDidChangeNotification object:clipView];
     
+    [self addCheckbox];
+    
     NSLog(@"consoleTextView=%@", consoleTextView);
 }
 
+-(void)addCheckbox {
+    NSView* contentView = [[NSApp mainWindow] contentView];
+    contentView = [[self getConsoleTextView] getParantViewByClassName:@"DVTControllerContentView"];
+    NSView* scopeBarView = [contentView getViewByClassName:@"DVTScopeBarView"];
+    if( !scopeBarView ) {
+        return;
+    }
+    NSLog(@"scopeBarView");
+    
+    NSButton *button = nil;
+    NSPopUpButton *filterButton = nil;
+    for (NSView *subView in scopeBarView.subviews) {
+        if (button && filterButton) break;
+        if (button == nil && [[subView className] isEqualToString:@"NSButton"]) {
+            button = (NSButton *)subView;
+        }
+        else if (filterButton == nil && [[subView className] isEqualToString:@"NSPopUpButton"]) {
+            filterButton = (NSPopUpButton *)subView;
+        }
+    }
+    
+    if (!button) {
+        return;
+    }
+    NSLog(@"button=%@", button);
+    
+    NSButton* checkButton = [[NSButton alloc] initWithFrame:NSMakeRect(
+                                                                       filterButton.frame.origin.x + 100,
+                                                                       filterButton.frame.origin.y,
+                                                                       25,
+                                                                       filterButton.frame.size.height)];
+    [checkButton setButtonType:NSSwitchButton];
+//    [checkButton setTitle:@"Lock"];
+    [checkButton setState:NSOffState];
+    [checkButton setAction:@selector(checkScrollLockState:)];
+    [checkButton setTarget:self];
+    [scopeBarView addSubview:checkButton];
+    
+}
+
+-(void)checkScrollLockState:(NSButton*)button {
+    
+    if( button.state == NSOffState ) {
+        self.lockState = ScrollLockStateScrollable;
+    } else if(button.state == NSOnState ) {
+        self.lockState = ScrollLockStateLock;
+        self.clipViewY = self.clipView.bounds.origin.y;
+    }
+}
+
 -(void)print:(NSScrollView*)scrollView {
-    NSLog(@"lineScroll=%f", scrollView.lineScroll);
-    NSLog(@"verticalLineScroll=%f", scrollView.verticalLineScroll);
-    NSLog(@"pageScroll=%f", scrollView.pageScroll);
-    NSLog(@"verticalPageScroll=%f", scrollView.verticalPageScroll);
-    NSLog(@"scroller=%@", scrollView.verticalScroller);
-    NSLog(@"bounds=%f", self.clipView.bounds.origin.y);
+//    NSLog(@"lineScroll=%f", scrollView.lineScroll);
+//    NSLog(@"verticalLineScroll=%f", scrollView.verticalLineScroll);
+//    NSLog(@"pageScroll=%f", scrollView.pageScroll);
+//    NSLog(@"verticalPageScroll=%f", scrollView.verticalPageScroll);
+//    NSLog(@"scroller=%@", scrollView.verticalScroller);
+//    NSLog(@"bounds=%f", self.clipView.bounds.origin.y);
 }
 
 -(void)scrollViewWillStartScroll:(NSNotification*)notification {
@@ -100,7 +160,9 @@ static XcodeConsoleScrollLock* _sharedInstance;
     if( scrollView != self.scrollView ) {
         return;
     }
-    self.clipViewY = self.clipView.bounds.origin.y;
+    if(self.lockState == ScrollLockStateLock ) {
+        self.lockState = ScrollLockStateTemporaryScrollable;
+    }
     NSLog(@"");
     [self print:scrollView];
 }
@@ -110,7 +172,12 @@ static XcodeConsoleScrollLock* _sharedInstance;
     if( scrollView != self.scrollView ) {
         return;
     }
+    if(self.lockState == ScrollLockStateTemporaryScrollable) {
+        self.clipViewY = self.clipView.bounds.origin.y;
+        self.lockState = ScrollLockStateScrollable;
+    }
     NSLog(@"");
+    
     [self print:scrollView];
 }
 
@@ -119,6 +186,10 @@ static XcodeConsoleScrollLock* _sharedInstance;
     if( scrollView != self.scrollView ) {
         return;
     }
+//    if(self.isLocked == ScrollLockStateTemporaryScrollable) {
+//        self.clipViewY = self.clipView.bounds.origin.y;
+//        self.isLocked = ScrollLockStateScrollable;
+//    }
     NSLog(@"");
     [self print:scrollView];
 }
@@ -128,10 +199,13 @@ static XcodeConsoleScrollLock* _sharedInstance;
     if( clipView != self.clipView ) {
         return;
     }
-    CGRect bounds = clipView.bounds;
-    bounds.origin.y = self.clipViewY;
-    clipView.bounds = bounds;
-    NSLog(@"bounds=%f", clipView.bounds.origin.y);
+    
+    if( self.lockState == ScrollLockStateLock ) {
+        CGRect bounds = clipView.bounds;
+        bounds.origin.y = self.clipViewY;
+        clipView.bounds = bounds;
+        NSLog(@"bounds=%f", clipView.bounds.origin.y);
+    }
 }
 
 -(IDEConsoleTextView*)getConsoleTextView {

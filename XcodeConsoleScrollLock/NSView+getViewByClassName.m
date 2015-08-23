@@ -11,8 +11,7 @@
 @implementation NSView (getViewByClassName)
 
 
-- (NSView *)getViewByClassName:(NSString *)className
-{
+- (NSView *)getViewByClassName:(NSString *)className {
     Class class = NSClassFromString(className);
     for (NSView *subView in self.subviews) {
         if ([subView isKindOfClass:class]) {
@@ -39,6 +38,19 @@
         desc = [desc stringByAppendingString:[subView descriptionViewsWithPrefix:prefix]];
     }
     return desc;
+}
+
+
+-(NSView*)getParantViewByClassName:(NSString *)className {
+    NSView *superView = self.superview;
+    while (superView) {
+        if ([[superView className] isEqualToString:className]) {
+            return superView;
+        }
+        superView = superView.superview;
+    }
+    
+    return nil;
 }
 
 @end

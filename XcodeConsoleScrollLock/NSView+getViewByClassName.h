@@ -10,7 +10,7 @@
 
 @interface NSView (getViewByClassName)
 
-- (NSView *)getViewByClassName:(NSString *)className;
+-(NSView*)getViewByClassName:(NSString *)className;
 -(NSString*)descriptionViews;
-
+-(NSView*)getParantViewByClassName:(NSString *)className;
 @end

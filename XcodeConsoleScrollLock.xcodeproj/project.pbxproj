@@ -6,9 +6,19 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D67F56541B89912900DCD589 /* NSView+getViewByClassName.m in Sources */ = {isa = PBXBuildFile; fileRef = D67F56531B89912900DCD589 /* NSView+getViewByClassName.m */; };
+		D6C68D431B884D1B00F25538 /* XcodeConsoleScrollLock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C68D421B884D1B00F25538 /* XcodeConsoleScrollLock.m */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		D6C68D361B884C5F00F25538 /* XcodeConsoleScrollLock.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XcodeConsoleScrollLock.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		D67F56521B89912900DCD589 /* NSView+getViewByClassName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSView+getViewByClassName.h"; path = "XcodeConsoleScrollLock/NSView+getViewByClassName.h"; sourceTree = "<group>"; };
+		D67F56531B89912900DCD589 /* NSView+getViewByClassName.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSView+getViewByClassName.m"; path = "XcodeConsoleScrollLock/NSView+getViewByClassName.m"; sourceTree = "<group>"; };
+		D6C68D361B884C5F00F25538 /* XcodeConsoleScrollLock.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XcodeConsoleScrollLock.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6C68D3A1B884C5F00F25538 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D6C68D411B884D1B00F25538 /* XcodeConsoleScrollLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XcodeConsoleScrollLock.h; sourceTree = "<group>"; };
+		D6C68D421B884D1B00F25538 /* XcodeConsoleScrollLock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XcodeConsoleScrollLock.m; sourceTree = "<group>"; };
+		D6EF31201B8855B600F79AA4 /* XCodeComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCodeComponent.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -22,9 +32,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D67F56511B89910900DCD589 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				D67F56521B89912900DCD589 /* NSView+getViewByClassName.h */,
+				D67F56531B89912900DCD589 /* NSView+getViewByClassName.m */,
+			);
+			name = Category;
+			sourceTree = "<group>";
+		};
 		D6C68D2D1B884C5F00F25538 = {
 			isa = PBXGroup;
 			children = (
+				D67F56511B89910900DCD589 /* Category */,
 				D6C68D381B884C5F00F25538 /* XcodeConsoleScrollLock */,
 				D6C68D371B884C5F00F25538 /* Products */,
 			);
@@ -33,7 +53,7 @@
 		D6C68D371B884C5F00F25538 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D6C68D361B884C5F00F25538 /* XcodeConsoleScrollLock.bundle */,
+				D6C68D361B884C5F00F25538 /* XcodeConsoleScrollLock.xcplugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -41,6 +61,8 @@
 		D6C68D381B884C5F00F25538 /* XcodeConsoleScrollLock */ = {
 			isa = PBXGroup;
 			children = (
+				D6EF311F1B88559800F79AA4 /* XcodeComponent */,
+				D6C68D401B884CF800F25538 /* Class */,
 				D6C68D391B884C5F00F25538 /* Supporting Files */,
 			);
 			path = XcodeConsoleScrollLock;
@@ -52,6 +74,23 @@
 				D6C68D3A1B884C5F00F25538 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D6C68D401B884CF800F25538 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				D6C68D411B884D1B00F25538 /* XcodeConsoleScrollLock.h */,
+				D6C68D421B884D1B00F25538 /* XcodeConsoleScrollLock.m */,
+			);
+			name = Class;
+			sourceTree = "<group>";
+		};
+		D6EF311F1B88559800F79AA4 /* XcodeComponent */ = {
+			isa = PBXGroup;
+			children = (
+				D6EF31201B8855B600F79AA4 /* XCodeComponent.h */,
+			);
+			name = XcodeComponent;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -71,7 +110,7 @@
 			);
 			name = XcodeConsoleScrollLock;
 			productName = XcodeConsoleScrollLock;
-			productReference = D6C68D361B884C5F00F25538 /* XcodeConsoleScrollLock.bundle */;
+			productReference = D6C68D361B884C5F00F25538 /* XcodeConsoleScrollLock.xcplugin */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -120,6 +159,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D67F56541B89912900DCD589 /* NSView+getViewByClassName.m in Sources */,
+				D6C68D431B884D1B00F25538 /* XcodeConsoleScrollLock.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,11 +248,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = "$(HOME)";
 				INFOPLIST_FILE = XcodeConsoleScrollLock/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = bundle;
+				SKIP_INSTALL = NO;
+				WRAPPER_EXTENSION = xcplugin;
 			};
 			name = Debug;
 		};
@@ -219,11 +262,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = "$(HOME)";
 				INFOPLIST_FILE = XcodeConsoleScrollLock/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = bundle;
+				SKIP_INSTALL = NO;
+				WRAPPER_EXTENSION = xcplugin;
 			};
 			name = Release;
 		};
@@ -246,6 +291,7 @@
 				D6C68D3F1B884C5F00F25538 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

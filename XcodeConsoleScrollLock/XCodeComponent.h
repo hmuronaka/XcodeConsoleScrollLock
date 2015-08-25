@@ -45,6 +45,8 @@
 @end
 
 @interface IDEConsoleTextView : DVTCompletingTextView
+
+-(void)_scrollToBottom;
 @end
 
 #endif

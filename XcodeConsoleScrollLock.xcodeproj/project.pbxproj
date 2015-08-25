@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D60AC8A81B8C1C3A009A4561 /* IDEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D60AC8A71B8C1C3A009A4561 /* IDEKit.framework */; };
 		D67F56541B89912900DCD589 /* NSView+getViewByClassName.m in Sources */ = {isa = PBXBuildFile; fileRef = D67F56531B89912900DCD589 /* NSView+getViewByClassName.m */; };
 		D6C68D431B884D1B00F25538 /* XcodeConsoleScrollLock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C68D421B884D1B00F25538 /* XcodeConsoleScrollLock.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D60AC8A71B8C1C3A009A4561 /* IDEKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEKit.framework; path = ../../../../../Applications/Xcode.app/Contents/Frameworks/IDEKit.framework; sourceTree = "<group>"; };
 		D67F56521B89912900DCD589 /* NSView+getViewByClassName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSView+getViewByClassName.h"; path = "XcodeConsoleScrollLock/NSView+getViewByClassName.h"; sourceTree = "<group>"; };
 		D67F56531B89912900DCD589 /* NSView+getViewByClassName.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSView+getViewByClassName.m"; path = "XcodeConsoleScrollLock/NSView+getViewByClassName.m"; sourceTree = "<group>"; };
 		D6C68D361B884C5F00F25538 /* XcodeConsoleScrollLock.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XcodeConsoleScrollLock.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -26,12 +28,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D60AC8A81B8C1C3A009A4561 /* IDEKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D60AC8A61B8C1C17009A4561 /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				D60AC8A71B8C1C3A009A4561 /* IDEKit.framework */,
+			);
+			name = Framework;
+			sourceTree = "<group>";
+		};
 		D67F56511B89910900DCD589 /* Category */ = {
 			isa = PBXGroup;
 			children = (
@@ -44,6 +55,7 @@
 		D6C68D2D1B884C5F00F25538 = {
 			isa = PBXGroup;
 			children = (
+				D60AC8A61B8C1C17009A4561 /* Framework */,
 				D67F56511B89910900DCD589 /* Category */,
 				D6C68D381B884C5F00F25538 /* XcodeConsoleScrollLock */,
 				D6C68D371B884C5F00F25538 /* Products */,
@@ -250,6 +262,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(HOME)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
+				);
 				INFOPLIST_FILE = XcodeConsoleScrollLock/Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -264,6 +280,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(HOME)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
+				);
 				INFOPLIST_FILE = XcodeConsoleScrollLock/Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				PRODUCT_NAME = "$(TARGET_NAME)";

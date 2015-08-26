@@ -70,6 +70,7 @@ static XcodeConsoleScrollLock* _sharedInstance;
                                                      name:NSApplicationDidFinishLaunchingNotification
                                                    object:nil];
         
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(activate:) name:@"IDEControlGroupDidChangeNotificationName" object:nil];
         
 
@@ -85,13 +86,12 @@ static XcodeConsoleScrollLock* _sharedInstance;
 
 -(void)applicationDidFinishLaunching:(NSNotification*)noti {
     NSLog(@"XcodeConsoleScrollLock launching!!");
-    
-
 }
 
 -(void)ignoreScrollToBottom {
     IDEConsoleTextView* textView = (IDEConsoleTextView*)self;
-    if( [XcodeConsoleScrollLock sharedInstance].lockState != ScrollLockStateLock ) {
+    NSButton* checkButton = objc_getAssociatedObject(textView, "LOCK_CHECK_BOX");
+    if( checkButton.state != NSOnState ) {
         SEL sel = NSSelectorFromString(@"XCSL_scrollToBottom");
         [[[XcodeConsoleScrollLock sharedInstance] getConsoleTextView] performSelector:sel withObject:nil];
     }
@@ -120,7 +120,8 @@ static XcodeConsoleScrollLock* _sharedInstance;
 
 -(void)addCheckbox {
     NSView* contentView = [[NSApp mainWindow] contentView];
-    contentView = [[self getConsoleTextView] getParantViewByClassName:@"DVTControllerContentView"];
+    IDEConsoleTextView* consoleTextView = [self getConsoleTextView];
+    contentView = [consoleTextView getParantViewByClassName:@"DVTControllerContentView"];
     NSView* scopeBarView = [contentView getViewByClassName:@"DVTScopeBarView"];
     if( !scopeBarView ) {
         return;
@@ -156,6 +157,7 @@ static XcodeConsoleScrollLock* _sharedInstance;
     [checkButton setTarget:self];
     [scopeBarView addSubview:checkButton];
     
+    objc_setAssociatedObject(consoleTextView, "LOCK_CHECK_BOX", checkButton, OBJC_ASSOCIATION_ASSIGN);
 }
 
 -(void)checkScrollLockState:(NSButton*)button {

@@ -60,7 +60,9 @@ static XcodeConsoleScrollLock* _sharedInstance;
         _lockState = ScrollLockStateScrollable;
         self.originalMethod = class_getInstanceMethod([IDEConsoleTextView class], @selector(_scrollToBottom));
         self.overrideMethod = class_getInstanceMethod([self class], @selector(ignoreScrollToBottom));
-        class_addMethod([IDEConsoleTextView class], @selector(XCSL_scrollToBottom), method_getImplementation(self.originalMethod), method_getTypeEncoding(self.originalMethod));
+        SEL selector = NSSelectorFromString(@"XCSL_scrollToBottom");
+        NSLog(@"%s", method_getTypeEncoding(self.originalMethod));
+        class_addMethod([IDEConsoleTextView class], selector, method_getImplementation(self.originalMethod), method_getTypeEncoding(self.originalMethod));
         method_exchangeImplementations(self.originalMethod, self.overrideMethod);
         
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -88,8 +90,10 @@ static XcodeConsoleScrollLock* _sharedInstance;
 }
 
 -(void)ignoreScrollToBottom {
+    IDEConsoleTextView* textView = (IDEConsoleTextView*)self;
     if( [XcodeConsoleScrollLock sharedInstance].lockState != ScrollLockStateLock ) {
-        [[[XcodeConsoleScrollLock sharedInstance] getConsoleTextView] performSelector:@selector(XCL_scrollToBottom) withObject:nil];
+        SEL sel = NSSelectorFromString(@"XCSL_scrollToBottom");
+        [[[XcodeConsoleScrollLock sharedInstance] getConsoleTextView] performSelector:sel withObject:nil];
     }
 }
 

@@ -70,6 +70,10 @@ static XcodeConsoleScrollLock* _sharedInstance;
                                                      name:NSApplicationDidFinishLaunchingNotification
                                                    object:nil];
         
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillTerminate:)
+                                                     name:NSApplicationWillTerminateNotification
+                                                   object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(activate:) name:@"IDEControlGroupDidChangeNotificationName" object:nil];
         
@@ -86,6 +90,11 @@ static XcodeConsoleScrollLock* _sharedInstance;
 
 -(void)applicationDidFinishLaunching:(NSNotification*)noti {
     NSLog(@"XcodeConsoleScrollLock launching!!");
+}
+
+-(void)applicationWillTerminate:(NSNotification*)noti {
+    NSLog(@"XcodeConsoleScrollLock terminate!!");
+    objc_setAssociatedObject([self getConsoleTextView], "LOCK_CHECK_BOX", nil, OBJC_ASSOCIATION_ASSIGN);
 }
 
 -(void)ignoreScrollToBottom {

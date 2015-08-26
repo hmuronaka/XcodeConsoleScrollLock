@@ -58,12 +58,15 @@ static XcodeConsoleScrollLock* _sharedInstance;
     self = [super init];
     if (self) {
         _lockState = ScrollLockStateScrollable;
+        
+        // override IDEConsoleTextView::_scrollToBottom
         self.originalMethod = class_getInstanceMethod([IDEConsoleTextView class], @selector(_scrollToBottom));
         self.overrideMethod = class_getInstanceMethod([self class], @selector(ignoreScrollToBottom));
         SEL selector = NSSelectorFromString(@"XCSL_scrollToBottom");
-        NSLog(@"%s", method_getTypeEncoding(self.originalMethod));
+        
         class_addMethod([IDEConsoleTextView class], selector, method_getImplementation(self.originalMethod), method_getTypeEncoding(self.originalMethod));
         method_exchangeImplementations(self.originalMethod, self.overrideMethod);
+        
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidFinishLaunching:)
@@ -76,8 +79,6 @@ static XcodeConsoleScrollLock* _sharedInstance;
                                                    object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(activate:) name:@"IDEControlGroupDidChangeNotificationName" object:nil];
-        
-
     }
     
     return self;
@@ -89,17 +90,18 @@ static XcodeConsoleScrollLock* _sharedInstance;
 }
 
 -(void)applicationDidFinishLaunching:(NSNotification*)noti {
-    NSLog(@"XcodeConsoleScrollLock launching!!");
+//    NSLog(@"XcodeConsoleScrollLock launching!!");
 }
 
 -(void)applicationWillTerminate:(NSNotification*)noti {
-    NSLog(@"XcodeConsoleScrollLock terminate!!");
+//    NSLog(@"XcodeConsoleScrollLock terminate!!");
     objc_setAssociatedObject([self getConsoleTextView], "LOCK_CHECK_BOX", nil, OBJC_ASSOCIATION_ASSIGN);
 }
 
 -(void)ignoreScrollToBottom {
     IDEConsoleTextView* textView = (IDEConsoleTextView*)self;
     NSButton* checkButton = objc_getAssociatedObject(textView, "LOCK_CHECK_BOX");
+    
     if( checkButton.state != NSOnState ) {
         SEL sel = NSSelectorFromString(@"XCSL_scrollToBottom");
         [[[XcodeConsoleScrollLock sharedInstance] getConsoleTextView] performSelector:sel withObject:nil];
@@ -108,34 +110,26 @@ static XcodeConsoleScrollLock* _sharedInstance;
 
 -(void)activate:(NSNotification*)notification {
     IDEConsoleTextView* consoleTextView = [self getConsoleTextView];
-    [consoleTextView setPostsBoundsChangedNotifications:YES];
+    
     NSClipView* clipView = (NSClipView*)consoleTextView.superview;
     NSScrollView* scrollView = (NSScrollView*)consoleTextView.superview.superview;
     self.clipView = clipView;
     self.clipViewY = self.clipView.bounds.origin.y;
     self.scrollView = scrollView;
-    NSLog(@"scrollView=%@", scrollView);
-    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollViewWillStartScroll:) name:NSScrollViewWillStartLiveScrollNotification object:scrollView];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollDidScroll:)		name:NSScrollViewDidLiveScrollNotification object:scrollView];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollDidEnd:)		name:NSScrollViewDidEndLiveScrollNotification object:scrollView];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangedBounds:)		name:NSViewBoundsDidChangeNotification object:clipView];
     
     [self addCheckbox];
-    
-    NSLog(@"consoleTextView=%@", consoleTextView);
 }
 
 -(void)addCheckbox {
+    
     NSView* contentView = [[NSApp mainWindow] contentView];
     IDEConsoleTextView* consoleTextView = [self getConsoleTextView];
     contentView = [consoleTextView getParantViewByClassName:@"DVTControllerContentView"];
     NSView* scopeBarView = [contentView getViewByClassName:@"DVTScopeBarView"];
     if( !scopeBarView ) {
+        NSLog(@"scopeBarView is nil");
         return;
     }
-    NSLog(@"scopeBarView");
     
     NSButton *button = nil;
     NSPopUpButton *filterButton = nil;
@@ -150,12 +144,12 @@ static XcodeConsoleScrollLock* _sharedInstance;
     }
     
     if (!button) {
+        NSLog(@"button is nil");
         return;
     }
-    NSLog(@"button=%@", button);
     
     NSButton* checkButton = [[NSButton alloc] initWithFrame:NSMakeRect(
-                                                                       filterButton.frame.origin.x + 150,
+                                                                       filterButton.frame.origin.x + filterButton.frame.size.width + 30,
                                                                        filterButton.frame.origin.y,
                                                                        50,
                                                                        filterButton.frame.size.height)];
@@ -173,80 +167,14 @@ static XcodeConsoleScrollLock* _sharedInstance;
     
     if( button.state == NSOffState ) {
         self.lockState = ScrollLockStateScrollable;
-//        method_exchangeImplementations(self.overrideMethod, self.originalMethod);
     } else if(button.state == NSOnState ) {
         self.lockState = ScrollLockStateLock;
-//       method_exchangeImplementations(self.originalMethod, self.overrideMethod);
-//        self.clipViewY = self.clipView.bounds.origin.y;
-    }
-}
-
--(void)print:(NSScrollView*)scrollView {
-//    NSLog(@"lineScroll=%f", scrollView.lineScroll);
-//    NSLog(@"verticalLineScroll=%f", scrollView.verticalLineScroll);
-//    NSLog(@"pageScroll=%f", scrollView.pageScroll);
-//    NSLog(@"verticalPageScroll=%f", scrollView.verticalPageScroll);
-//    NSLog(@"scroller=%@", scrollView.verticalScroller);
-//    NSLog(@"bounds=%f", self.clipView.bounds.origin.y);
-}
-
--(void)scrollViewWillStartScroll:(NSNotification*)notification {
-    NSScrollView* scrollView = (NSScrollView*)notification.object;
-    if( scrollView != self.scrollView ) {
-        return;
-    }
-    if(self.lockState == ScrollLockStateLock ) {
-        self.lockState = ScrollLockStateTemporaryScrollable;
-    }
-//    NSLog(@"");
-    [self print:scrollView];
-}
-
--(void)scrollDidScroll:(NSNotification*)notification {
-    NSScrollView* scrollView = (NSScrollView*)notification.object;
-    if( scrollView != self.scrollView ) {
-        return;
-    }
-    if(self.lockState == ScrollLockStateTemporaryScrollable) {
-        self.clipViewY = self.clipView.bounds.origin.y;
-        self.lockState = ScrollLockStateScrollable;
-    }
-//    NSLog(@"");
-    
-    [self print:scrollView];
-}
-
--(void)scrollDidEnd:(NSNotification*)notification {
-    NSScrollView* scrollView = (NSScrollView*)notification.object;
-    if( scrollView != self.scrollView ) {
-        return;
-    }
-//    if(self.isLocked == ScrollLockStateTemporaryScrollable) {
-//        self.clipViewY = self.clipView.bounds.origin.y;
-//        self.isLocked = ScrollLockStateScrollable;
-//    }
-//    NSLog(@"");
-    [self print:scrollView];
-}
-
--(void)didChangedBounds:(NSNotification*)notification {
-    NSClipView* clipView = notification.object;
-    if( clipView != self.clipView ) {
-        return;
-    }
-    
-    if( self.lockState == ScrollLockStateLock ) {
-        CGRect bounds = clipView.bounds;
-        bounds.origin.y = self.clipViewY;
-        clipView.bounds = bounds;
-//        NSLog(@"bounds=%f", clipView.bounds.origin.y);
     }
 }
 
 -(IDEConsoleTextView*)getConsoleTextView {
     
     NSView* contentView = [[NSApp mainWindow] contentView];
-    NSLog(@"contentView = %@", [contentView descriptionViews]);
     IDEConsoleTextView* consoleTextView = (IDEConsoleTextView*)[contentView getViewByClassName:@"IDEConsoleTextView"];
     
     if( !consoleTextView ) {

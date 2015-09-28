@@ -10,6 +10,8 @@
 		D60AC8A81B8C1C3A009A4561 /* IDEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D60AC8A71B8C1C3A009A4561 /* IDEKit.framework */; };
 		D67F56541B89912900DCD589 /* NSView+getViewByClassName.m in Sources */ = {isa = PBXBuildFile; fileRef = D67F56531B89912900DCD589 /* NSView+getViewByClassName.m */; };
 		D6C68D431B884D1B00F25538 /* XcodeConsoleScrollLock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C68D421B884D1B00F25538 /* XcodeConsoleScrollLock.m */; };
+		D6CB05631BB8F551005CDC4A /* IDEConsoleTextView+Extend.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CB05621BB8F551005CDC4A /* IDEConsoleTextView+Extend.m */; settings = {ASSET_TAGS = (); }; };
+		D6CB05661BB8F607005CDC4A /* NSObject+XVimAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CB05651BB8F607005CDC4A /* NSObject+XVimAdditions.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +22,10 @@
 		D6C68D3A1B884C5F00F25538 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6C68D411B884D1B00F25538 /* XcodeConsoleScrollLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XcodeConsoleScrollLock.h; sourceTree = "<group>"; };
 		D6C68D421B884D1B00F25538 /* XcodeConsoleScrollLock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XcodeConsoleScrollLock.m; sourceTree = "<group>"; };
+		D6CB05611BB8F551005CDC4A /* IDEConsoleTextView+Extend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "IDEConsoleTextView+Extend.h"; sourceTree = "<group>"; };
+		D6CB05621BB8F551005CDC4A /* IDEConsoleTextView+Extend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "IDEConsoleTextView+Extend.m"; sourceTree = "<group>"; };
+		D6CB05641BB8F607005CDC4A /* NSObject+XVimAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+XVimAdditions.h"; sourceTree = "<group>"; };
+		D6CB05651BB8F607005CDC4A /* NSObject+XVimAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+XVimAdditions.m"; sourceTree = "<group>"; };
 		D6EF31201B8855B600F79AA4 /* XCodeComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCodeComponent.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -46,6 +52,8 @@
 		D67F56511B89910900DCD589 /* Category */ = {
 			isa = PBXGroup;
 			children = (
+				D6CB05641BB8F607005CDC4A /* NSObject+XVimAdditions.h */,
+				D6CB05651BB8F607005CDC4A /* NSObject+XVimAdditions.m */,
 				D67F56521B89912900DCD589 /* NSView+getViewByClassName.h */,
 				D67F56531B89912900DCD589 /* NSView+getViewByClassName.m */,
 			);
@@ -93,6 +101,8 @@
 			children = (
 				D6C68D411B884D1B00F25538 /* XcodeConsoleScrollLock.h */,
 				D6C68D421B884D1B00F25538 /* XcodeConsoleScrollLock.m */,
+				D6CB05611BB8F551005CDC4A /* IDEConsoleTextView+Extend.h */,
+				D6CB05621BB8F551005CDC4A /* IDEConsoleTextView+Extend.m */,
 			);
 			name = Class;
 			sourceTree = "<group>";
@@ -171,6 +181,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6CB05631BB8F551005CDC4A /* IDEConsoleTextView+Extend.m in Sources */,
+				D6CB05661BB8F607005CDC4A /* NSObject+XVimAdditions.m in Sources */,
 				D67F56541B89912900DCD589 /* NSView+getViewByClassName.m in Sources */,
 				D6C68D431B884D1B00F25538 /* XcodeConsoleScrollLock.m in Sources */,
 			);

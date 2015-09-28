@@ -12,6 +12,7 @@
 #import "XCodeComponent.h"
 #import "NSView+getViewByClassName.h"
 #import <objc/runtime.h>
+#import "IDEConsoleTextView+Extend.h"
 
 #define NSLog(format, ...) NSLog(@"XcodeConsoleScrollLock:%4d " format, __LINE__, ##__VA_ARGS__)
 
@@ -23,10 +24,7 @@ typedef NS_ENUM(NSInteger, ScrollLockState) {
 
 @interface XcodeConsoleScrollLock()
 
-@property(nonatomic, weak) NSScrollView* scrollView;
 @property(nonatomic, assign) ScrollLockState lockState;
-@property(nonatomic, weak) NSClipView* clipView;
-@property(nonatomic, assign) CGFloat clipViewY;
 @property(nonatomic, assign) Method originalMethod;
 @property(nonatomic, assign) Method overrideMethod;
 
@@ -59,14 +57,15 @@ static XcodeConsoleScrollLock* _sharedInstance;
     if (self) {
         _lockState = ScrollLockStateScrollable;
         
-        // override IDEConsoleTextView::_scrollToBottom
-        self.originalMethod = class_getInstanceMethod([IDEConsoleTextView class], @selector(_scrollToBottom));
-        self.overrideMethod = class_getInstanceMethod([self class], @selector(ignoreScrollToBottom));
-        SEL selector = NSSelectorFromString(@"XCSL_scrollToBottom");
+//        // override IDEConsoleTextView::_scrollToBottom
+//        self.originalMethod = class_getInstanceMethod([IDEConsoleTextView class], @selector(_scrollToBottom));
+//        self.overrideMethod = class_getInstanceMethod([self class], @selector(ignoreScrollToBottom));
+//        SEL selector = NSSelectorFromString(@"XCSL_scrollToBottom");
+//        
+//        class_addMethod([IDEConsoleTextView class], selector, method_getImplementation(self.originalMethod), method_getTypeEncoding(self.originalMethod));
+//        method_exchangeImplementations(self.originalMethod, self.overrideMethod);
         
-        class_addMethod([IDEConsoleTextView class], selector, method_getImplementation(self.originalMethod), method_getTypeEncoding(self.originalMethod));
-        method_exchangeImplementations(self.originalMethod, self.overrideMethod);
-        
+        [IDEConsoleTextView xcsl_initialize];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidFinishLaunching:)
@@ -74,14 +73,37 @@ static XcodeConsoleScrollLock* _sharedInstance;
                                                    object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillTerminate:)
-                                                     name:NSApplicationWillTerminateNotification
+                                                 selector:@selector(workspaceClosed:)
+                                                     name:@"_IDEWorkspaceClosedNotification"
                                                    object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(activate:) name:@"IDEControlGroupDidChangeNotificationName" object:nil];
+        
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationListener:) name:nil object:nil];
+
     }
     
     return self;
+}
+
+-(void)notificationListener:(NSNotification *)notification {
+    // let's filter all the "normal" NSxxx events so that we only
+    // really see the Xcode specific events.
+    if ([[notification name] length] >= 2 && [[[notification name] substringWithRange:NSMakeRange(0, 2)] isEqualTo:@"NS"])
+        return;
+    else
+        NSLog(@"  Notification: %@", [notification name]);
+}
+
+-(void)workspaceClosed:(NSNotification*)notification {
+    NSLog(@"workspaceClosed");
+    IDEConsoleTextView* textView = [self getConsoleTextView];
+    if( !textView ) {
+        NSLog(@"textView is nil");
+        return;
+    }
+    
+    objc_setAssociatedObject(textView, "LOCK_CHECK_BOX", nil, OBJC_ASSOCIATION_ASSIGN);
 }
 
 - (void)dealloc
@@ -93,38 +115,58 @@ static XcodeConsoleScrollLock* _sharedInstance;
 //    NSLog(@"XcodeConsoleScrollLock launching!!");
 }
 
--(void)applicationWillTerminate:(NSNotification*)noti {
-//    NSLog(@"XcodeConsoleScrollLock terminate!!");
-    objc_setAssociatedObject([self getConsoleTextView], "LOCK_CHECK_BOX", nil, OBJC_ASSOCIATION_ASSIGN);
-}
 
 -(void)ignoreScrollToBottom {
+    NSLog(@"A");
     IDEConsoleTextView* textView = (IDEConsoleTextView*)self;
-    NSButton* checkButton = objc_getAssociatedObject(textView, "LOCK_CHECK_BOX");
-    
-    if( checkButton.state != NSOnState ) {
-        SEL sel = NSSelectorFromString(@"XCSL_scrollToBottom");
-        [[[XcodeConsoleScrollLock sharedInstance] getConsoleTextView] performSelector:sel withObject:nil];
+    if( !textView ) {
+        return;
     }
+    NSLog(@"B");
+    NSButton* checkButton = objc_getAssociatedObject(textView, "LOCK_CHECK_BOX");
+    if( !checkButton ) {
+        return;
+    }
+    
+    NSLog(@"C");
+    if( checkButton.state != NSOnState ) {
+        [self ignoreScrollToBottom];
+//        SEL sel = NSSelectorFromString(@"XCSL_scrollToBottom");
+//        NSLog(@"D");
+//        [textView performSelector:sel withObject:nil];
+    }
+    NSLog(@"E");
 }
 
 -(void)activate:(NSNotification*)notification {
-    IDEConsoleTextView* consoleTextView = [self getConsoleTextView];
     
-    NSClipView* clipView = (NSClipView*)consoleTextView.superview;
-    NSScrollView* scrollView = (NSScrollView*)consoleTextView.superview.superview;
-    self.clipView = clipView;
-    self.clipViewY = self.clipView.bounds.origin.y;
-    self.scrollView = scrollView;
+    IDEConsoleTextView* textView = [self getConsoleTextView];
+    if( !textView ) {
+        return;
+    }
     
-    [self addCheckbox];
+    NSButton* checkButton = objc_getAssociatedObject(textView, "LOCK_CHECK_BOX");
+    if( !checkButton ) {
+        [self addCheckbox];
+    } else {
+        NSLog(@"checkbox already exists");
+    }
 }
 
 -(void)addCheckbox {
     
     NSView* contentView = [[NSApp mainWindow] contentView];
     IDEConsoleTextView* consoleTextView = [self getConsoleTextView];
+    if( !consoleTextView ) {
+        return;
+    }
+    
     contentView = [consoleTextView getParantViewByClassName:@"DVTControllerContentView"];
+    if( !contentView ) {
+        NSLog(@"contentView is nil");
+        return;
+    }
+    
     NSView* scopeBarView = [contentView getViewByClassName:@"DVTScopeBarView"];
     if( !scopeBarView ) {
         NSLog(@"scopeBarView is nil");
@@ -175,6 +217,10 @@ static XcodeConsoleScrollLock* _sharedInstance;
 -(IDEConsoleTextView*)getConsoleTextView {
     
     NSView* contentView = [[NSApp mainWindow] contentView];
+    if( !contentView ) {
+        NSLog(@"contentView is nil");
+        return nil;
+    }
     IDEConsoleTextView* consoleTextView = (IDEConsoleTextView*)[contentView getViewByClassName:@"IDEConsoleTextView"];
     
     if( !consoleTextView ) {

@@ -9,6 +9,8 @@
 #ifndef XcodeConsoleScrollLock_XCodeComponent_h
 #define XcodeConsoleScrollLock_XCodeComponent_h
 
+#import <AppKit/AppKit.h>
+
 @interface IDEViewController
 
 @end
